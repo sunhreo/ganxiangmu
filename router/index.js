@@ -41,7 +41,7 @@ const routes = [
     component: () => import('@/views/article/index.vue') // 文章详情
   },
   {
-    path: '/search',
+    path: '/search/index',
     component: () => import('@/views/search/index.vue') // 搜索中心
   },
   {
