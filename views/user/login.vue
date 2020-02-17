@@ -53,7 +53,31 @@
 
 <script>
 export default {
-  name: "user-chat"
+  name: "user-login",
+  data(){
+      return{
+          loginForm:{
+              mobile:'13911111111',
+              code:'246810'
+          }
+      }
+  },
+  methods:{
+      async login(){
+          // 调用api，校验账号信息有效，如下api请求有可能【成功】，还有可能【失败】
+      try {
+        const result = await apiUserLogin(this.loginForm)
+        // console.log(result) // {token:xx,refresh_token:xx}
+        this.$toast.success('登录成功')
+        // 页面跳转
+        this.$router.push('/')
+      } catch (err) {
+        // 错误信息提示 vant组件库方法
+        this.$toast.fail('手机号或验证码错误' + err)
+        // this.$toast.success('手机号或验证码错误' + err) // 成功提示
+      }
+    }
+  }
 };
 </script>
 
