@@ -6,37 +6,65 @@
       vant里边没有form相关组件，只有普通表单域组件
       van-cell-group是对普通表单域组件做封装
      -->
-    <van-cell-group>
+     <van-cell-group>
       <!--van-field 输入框表单域组件
         label="手机号" 表单域前边的名字设置
         required：不进行校验，设置表单域前边有"红星"
         clearable：表单域内容可以通过“叉号”清除
       -->
-      <van-field
-        v-model="loginForm.mobile"
-        type="text"
-        placeholder="请输入手机号码"
-        label="手机号"
-        required
-        clearable
-      />
-      <van-field
-        v-model="loginForm.code"
-        type="password"
-        placeholder="请输入验证码"
-        label="验证码"
-        required
-        clearable
-      >
-        <!-- 命名插槽应用，提示相关按钮，是要给van-field组件内部的slot去填充的
+      <!-- 表单域校验，通过 ValidationProvider 对被校验的项目做包围
+        name：校验失败，提示当前项目名称的
+        rules：设置校验规则，required 必填
+        接收"作用域插槽"数据，即校验失败错误信息
+        v-slot
+          在vue新版本中，可以通过v-slot接收作用域插槽数据，格式就是 v-slot="数据名称"
+        slot-scope="stData" {{stData.errors[0]}}表现具体校验失败错误信息的
+        形式上：v-slot="stData"     slot-scope="stData" 就是一样的
+        一点小区别：
+          v-slot:应用在template、组件标签
+          slot-scope:应用在template、组件标签、普通html标签
+
+        注意：
+          当前这个地方只让使用v-slot（使用slot-scope，页面就没有效果了）
+
+        v-slot="{errors}" 对象解构赋值  errors[0]
+        v-slot="stData" {{stData.errors[0]}}
+
+        当前校验部分，errors[0]  就可以访问到校验失败的错误信息了,固定用法
+      -->
+      <ValidationProvider name="手机号" rules="required" v-slot="{ errors }">
+        <!-- 把校验的错误信息展示出来
+        error-message：显示校验失败的错误信息
+         -->
+        <van-field
+          v-model="loginForm.mobile"
+          type="text"
+          placeholder="请输入手机号码"
+          label="手机号"
+          required
+          clearable
+          :error-message="errors[0]"
+        />
+      </ValidationProvider>
+      <ValidationProvider name="验证码" rules="required" v-slot="{ errors }">
+        <van-field
+          v-model="loginForm.code"
+          type="password"
+          placeholder="请输入验证码"
+          label="验证码"
+          required
+          clearable
+          :error-message="errors[0]"
+        >
+          <!-- 命名插槽应用，提示相关按钮，是要给van-field组件内部的slot去填充的
         size="small" 设置按钮大小的
         type="primary" 设置按钮背景颜色
-        -->
-        <van-button slot="button" size="small" type="primary"
-          >发送验证码</van-button
-        >
-      </van-field>
+          -->
+          <van-button slot="button" size="small" type="primary">发送验证码</van-button>
+        </van-field>
+      </ValidationProvider>
     </van-cell-group>
+
     <div class="login-btn">
       <!--van-button
         type:按钮背景颜色
@@ -52,8 +80,13 @@
 </template>
 
 <script>
+// 验证相关模块导入
+import { ValidationProvider } from 'vee-validate'
 export default {
   name: "user-login",
+  components:{
+      ValidationProvider
+  },
   data(){
       return{
           loginForm:{
@@ -63,11 +96,16 @@ export default {
       }
   },
   methods:{
-      async login(){
-          // 调用api，校验账号信息有效，如下api请求有可能【成功】，还有可能【失败】
+      // 登录系统
+    async login () {
+      // 调用api，校验账号信息有效，如下api请求有可能【成功】，还有可能【失败】
       try {
         const result = await apiUserLogin(this.loginForm)
+
         // console.log(result) // {token:xx,refresh_token:xx}
+        // 通过vuex维护服务器端返回的token等秘钥信息
+        this.$store.commit('updateUser', result)
+
         this.$toast.success('登录成功')
         // 页面跳转
         this.$router.push('/')

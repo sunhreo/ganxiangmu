@@ -2,9 +2,13 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import '@/utils/validate.js' // 验证相关
 import Vant from 'vant'
-import 'amfe-flexible/index.min.js'
+import 'vant/lib/index.css'
 import '@/assets/css/global.less'
+
+import 'amfe-flexible/index.min.js'
+
 Vue.use(Vant)
 
 Vue.config.productionTip = false
