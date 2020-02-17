@@ -10,7 +10,7 @@ export default new Vuex.Store({
   mutations: {
     undateUser (state, data) {
       state.user = data
-      localStorage.setItem(USER_KEY,JSON.stringify(data))
+      localStorage.setItem(USER_KEY.JSON.stringify(data))
     },
     clearUser (state) {
       // 1.vuex做清除,使得有响应式
