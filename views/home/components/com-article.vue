@@ -50,10 +50,12 @@ export default {
         timestamp: this.ts,
         with_top: 1
       });
-      // data接收获取的文章
-      this.articleList = result.results;
+      // data接收获取的文章(变为追加状态)
+      // this.articleList.push(...result.results)
       // 更新时间戳信息
-      this.ts = result.pre_timestamp;
+      // this.ts = result.pre_timestamp
+
+      return result;
     },
     // 下拉刷新载入
     onRefresh() {
@@ -63,15 +65,21 @@ export default {
         this.onLoad(); // 获取数据一次
       }, 1000);
     },
-    onLoad() {
-      // 异步更新数据
-      setTimeout(() => {
-        for (let i = 0; i < 10; i++) {
-          this.list.push(this.list.length + 1);
-        }
-        // 获取文章
-        this.getArticleList();
-      });
+    // 上拉刷新载入
+    async onLoad() {
+      let result = await this.getArticleList();
+
+      // 把文章追加给articleList
+      this.articleList.push(...result.results);
+      // 关闭加载状态
+      this.loading = false;
+      if (!result.pre_timestamp) {
+        // 停止上拉载入功能
+        this.finished = true;
+      } else {
+        // 更新ts时间戳信息
+        this.ts = result.pre_timestamp;
+      }
     }
   }
 };
