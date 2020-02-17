@@ -3,40 +3,62 @@
     <!-- 频道展示区域 -->
     <van-tabs v-model="activeChannelIndex">
       <!--对频道做遍历展示-->
-      <van-tab :title="item.name" v-for="item in channelList" :key="item.id">
-        <com-article :channel_id="item.id"></com-article>
-      </van-tab>
+      <van-cell
+        v-for="item in articleList"
+        :key="item.art_id.toString()"
+        :title="item.title"
+      >
+        <template slot="label">
+          <van-grid
+            :border="false"
+            v-if="item.cover.type > 0"
+            :column-num="item.cover.type"
+          >
+            <van-grid-item v-for="(item2, k2) in item.cover.images" :key="k2">
+              <van-image width="90" height="90" :src="item2" />
+            </van-grid-item>
+          </van-grid>
+          <p>
+            <span>作者:{{ item.aut_name }}</span>
+            &nbsp;
+            <span>评论 :{{ item.comm_count }}</span>
+            &nbsp;
+            <span>时间:{{ item.pubdate }}</span>
+            &nbsp;
+          </p>
+        </template>
+      </van-cell>
     </van-tabs>
   </div>
 </template>
 
 <script>
-import { apiChannelList } from '@/api/channel'
-import ComArticle from './components/com-article'
+import { apiChannelList } from "@/api/channel";
+import ComArticle from "./components/com-article";
 export default {
   name: "home-index",
-  components:{
-      ComArticle
+  components: {
+    ComArticle
   },
   data() {
     return {
-        channelList:[],
+      channelList: [],
       activeChannelIndex: 0
     };
   },
-   created () {
+  created() {
     // 频道
-    this.getChannelList()
+    this.getChannelList();
   },
-   methods: {
+  methods: {
     // 获得频道列表
-    async getChannelList () {
-      let result = await apiChannelList()
+    async getChannelList() {
+      let result = await apiChannelList();
       // 接收频道信息
-      this.channelList = result.channels
+      this.channelList = result.channels;
     }
   }
-}
+};
 </script>
 
 <style scoped lang="less">
