@@ -80,7 +80,12 @@
         round：圆圈效果
         block：块级样式设置，占据一行
       -->
-      <van-button type="info" size="small" round block @click="login()"
+      <van-button
+        type="info"
+        block
+        @click="login()"
+        :loading="isLogin"
+        loading-text="登录中..."
         >登录</van-button
       >
     </div>
@@ -98,6 +103,7 @@ export default {
   },
   data() {
     return {
+      isLogin: false, // 登录等待
       loginForm: {
         mobile: "13911111111",
         code: "246810"
@@ -106,23 +112,20 @@ export default {
   },
   methods: {
     async login() {
-      // 对全部表单做校验
-      const valid = await this.$refs.loginFormRef.validate();
+      let valid = await this.$refs.loginFormRef.validate();
       if (!valid) {
-        // 校验失败
         return false;
       }
-
+      this.isLogin = true; // 开启等待效果
       try {
-        const result = await apiUserLogin(this.loginForm);
-
-        this.$store.commit("updateUser", result); // vuex维护token等信息
-
+        let result = await apiUserLogin(this.loginForm);
+        this.updateUser(result);
         this.$toast.success("登录成功");
         this.$router.push("/");
       } catch (err) {
-        this.$toast.fail("账号错误");
+        return this.$toast.fail("账号ddd不正确");
       }
+      this.isLogin = false; // 关闭等待效果
     }
   }
 };
