@@ -1,12 +1,13 @@
 <template>
   <div class="container">
     <van-tabs v-model="activeChannelIndex">
-      <van-tab title="推荐">
+        <van-tab title="推荐">
+          <com-article></com-article>
+        </van-tab>
         <!-- 文章列表展示区域 -->
         <div class="scroll-wrapper">
           <!-- 文章上拉列表 -->
         </div>
-      </van-tab>
       <van-tab title="数据库">数据库内容展示</van-tab>
       <van-tab title="后端">后端内容展示</van-tab>
     </van-tabs>
@@ -14,14 +15,18 @@
 </template>
 
 <script>
+import ComArticle from './components/com-article'
 export default {
   name: "home-index",
+  components:{
+      ComArticle
+  },
   data() {
     return {
       activeChannelIndex: 0
     };
-  },
-}
+  }
+};
 </script>
 
 <style scoped lang="less">
