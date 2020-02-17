@@ -34,14 +34,14 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: () => import('@/views/user/login.vue')
+    component: () => import('@/views/user/login.vue') // 登录
   },
   {
     path: '/article',
     component: () => import('@/views/article/index.vue') // 文章详情
   },
   {
-    path: '/search/index',
+    path: '/search',
     component: () => import('@/views/search/index.vue') // 搜索中心
   },
   {
