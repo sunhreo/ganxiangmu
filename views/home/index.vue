@@ -1,20 +1,17 @@
 <template>
   <div class="container">
+    <!-- 频道展示区域 -->
     <van-tabs v-model="activeChannelIndex">
-        <van-tab title="推荐">
-          <com-article></com-article>
-        </van-tab>
-        <!-- 文章列表展示区域 -->
-        <div class="scroll-wrapper">
-          <!-- 文章上拉列表 -->
-        </div>
-      <van-tab title="数据库">数据库内容展示</van-tab>
-      <van-tab title="后端">后端内容展示</van-tab>
+      <!--对频道做遍历展示-->
+      <van-tab :title="item.name" v-for="item in channelList" :key="item.id">
+        <com-article></com-article>
+      </van-tab>
     </van-tabs>
   </div>
 </template>
 
 <script>
+import { apiChannelList } from '@/api/channel'
 import ComArticle from './components/com-article'
 export default {
   name: "home-index",
@@ -23,10 +20,23 @@ export default {
   },
   data() {
     return {
+        channelList:[],
       activeChannelIndex: 0
     };
+  },
+   created () {
+    // 频道
+    this.getChannelList()
+  },
+   methods: {
+    // 获得频道列表
+    async getChannelList () {
+      let result = await apiChannelList()
+      // 接收频道信息
+      this.channelList = result.channels
+    }
   }
-};
+}
 </script>
 
 <style scoped lang="less">
