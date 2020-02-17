@@ -12,7 +12,13 @@ import 'amfe-flexible/index.min.js'
 Vue.use(Vant)
 
 Vue.config.productionTip = false
-
+Vue.prototype.$sleep = time => {
+  return new Promise((resolve) => {
+    window.setTimeout(() => {
+      resolve()
+    }, time)
+  })
+}
 new Vue({
   router,
   store,

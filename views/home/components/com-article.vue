@@ -67,6 +67,8 @@ export default {
     },
     // 上拉刷新载入
     async onLoad() {
+      // 上拉刷新载入
+      await this.$sleep(800); // 暂停0.8秒
       let result = await this.getArticleList();
 
       // 把文章追加给articleList
