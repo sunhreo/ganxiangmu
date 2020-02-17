@@ -26,6 +26,13 @@ export default {
       finished: false
     };
   },
+  props: {
+    // 当前选中的频道id信息
+    channel_id: {
+      type: Number,
+      required: true
+    }
+  },
   methods: {
     // 下拉刷新载入
     onRefresh() {

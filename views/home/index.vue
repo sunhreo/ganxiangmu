@@ -4,7 +4,7 @@
     <van-tabs v-model="activeChannelIndex">
       <!--对频道做遍历展示-->
       <van-tab :title="item.name" v-for="item in channelList" :key="item.id">
-        <com-article></com-article>
+        <com-article :channel_id="item.id"></com-article>
       </van-tab>
     </van-tabs>
   </div>
