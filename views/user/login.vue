@@ -6,13 +6,19 @@
       vant里边没有form相关组件，只有普通表单域组件
       van-cell-group是对普通表单域组件做封装
      -->
-     <van-cell-group>
-      <!--van-field 输入框表单域组件
+    <ValidationObserver ref="loginFormRef">
+      <van-cell-group>
+        <ValidationProvider
+          v-slot="{ errors }"
+          rules="required|phone"
+          name="手机号"
+        >
+          <!--van-field 输入框表单域组件
         label="手机号" 表单域前边的名字设置
         required：不进行校验，设置表单域前边有"红星"
         clearable：表单域内容可以通过“叉号”清除
       -->
-      <!-- 表单域校验，通过 ValidationProvider 对被校验的项目做包围
+          <!-- 表单域校验，通过 ValidationProvider 对被校验的项目做包围
         name：校验失败，提示当前项目名称的
         rules：设置校验规则，required 必填
         接收"作用域插槽"数据，即校验失败错误信息
@@ -32,38 +38,40 @@
 
         当前校验部分，errors[0]  就可以访问到校验失败的错误信息了,固定用法
       -->
-      <ValidationProvider name="手机号" rules="required" v-slot="{ errors }">
-        <!-- 把校验的错误信息展示出来
+          <!-- 把校验的错误信息展示出来
         error-message：显示校验失败的错误信息
          -->
-        <van-field
-          v-model="loginForm.mobile"
-          type="text"
-          placeholder="请输入手机号码"
-          label="手机号"
-          required
-          clearable
-          :error-message="errors[0]"
-        />
-      </ValidationProvider>
-      <ValidationProvider name="验证码" rules="required" v-slot="{ errors }">
-        <van-field
-          v-model="loginForm.code"
-          type="password"
-          placeholder="请输入验证码"
-          label="验证码"
-          required
-          clearable
-          :error-message="errors[0]"
-        >
-          <!-- 命名插槽应用，提示相关按钮，是要给van-field组件内部的slot去填充的
+          <van-field
+            v-model="loginForm.mobile"
+            type="text"
+            placeholder="请输入手机号码"
+            label="手机号"
+            required
+            clearable
+            :error-message="errors[0]"
+          />
+        </ValidationProvider>
+        <ValidationProvider v-slot="{ errors }" rules="required" name="密码">
+          <van-field
+            v-model="loginForm.code"
+            type="password"
+            placeholder="请输入验证码"
+            label="验证码"
+            required
+            clearable
+            :error-message="errors[0]"
+          >
+            <!-- 命名插槽应用，提示相关按钮，是要给van-field组件内部的slot去填充的
         size="small" 设置按钮大小的
         type="primary" 设置按钮背景颜色
           -->
-          <van-button slot="button" size="small" type="primary">发送验证码</van-button>
-        </van-field>
-      </ValidationProvider>
-    </van-cell-group>
+            <van-button slot="button" size="small" type="primary"
+              >发送验证码</van-button
+            >
+          </van-field>
+        </ValidationProvider>
+      </van-cell-group>
+    </ValidationObserver>
 
     <div class="login-btn">
       <!--van-button
@@ -81,38 +89,39 @@
 
 <script>
 // 验证相关模块导入
-import { ValidationProvider } from 'vee-validate'
+import { ValidationProvider, ValidationObserver } from "vee-validate";
 export default {
   name: "user-login",
-  components:{
-      ValidationProvider
+  components: {
+    ValidationProvider,
+    ValidationObserver
   },
-  data(){
-      return{
-          loginForm:{
-              mobile:'13911111111',
-              code:'246810'
-          }
+  data() {
+    return {
+      loginForm: {
+        mobile: "13911111111",
+        code: "246810"
       }
+    };
   },
-  methods:{
-      // 登录系统
-    async login () {
-      // 调用api，校验账号信息有效，如下api请求有可能【成功】，还有可能【失败】
+  methods: {
+    async login() {
+      // 对全部表单做校验
+      const valid = await this.$refs.loginFormRef.validate();
+      if (!valid) {
+        // 校验失败
+        return false;
+      }
+
       try {
-        const result = await apiUserLogin(this.loginForm)
+        const result = await apiUserLogin(this.loginForm);
 
-        // console.log(result) // {token:xx,refresh_token:xx}
-        // 通过vuex维护服务器端返回的token等秘钥信息
-        this.$store.commit('updateUser', result)
+        this.$store.commit("updateUser", result); // vuex维护token等信息
 
-        this.$toast.success('登录成功')
-        // 页面跳转
-        this.$router.push('/')
+        this.$toast.success("登录成功");
+        this.$router.push("/");
       } catch (err) {
-        // 错误信息提示 vant组件库方法
-        this.$toast.fail('手机号或验证码错误' + err)
-        // this.$toast.success('手机号或验证码错误' + err) // 成功提示
+        this.$toast.fail("账号错误");
       }
     }
   }

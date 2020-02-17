@@ -13,7 +13,19 @@ localize({
 })
 // 4. 使用具体的语言
 localize('zhCN')
-
+// 为校验手机号码，自定义规则
+// phone:规则名称
+// value:被校验的数据
+extend('phone', {
+  validate: value => {
+    // return true  校验成功
+    // return false 校验失败
+    const reg = /^1[35789]\d{9}$/ // 正则校验手机号码
+    return reg.test(value) // 正则匹配目标内容，返回boolean
+  },
+  // 校验失败的错误信息{_field_}代表被校验项目的name的名称
+  message: '{_field_}格式不正确'
+})
 // 遍历、注册全部的规则
 Object.keys(rules).forEach(rule => {
   extend(rule, rules[rule])
